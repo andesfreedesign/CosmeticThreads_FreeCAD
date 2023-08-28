@@ -3,7 +3,7 @@ A macro for FreeCAD software, which allows cosmetic threads to be applied to fas
 
 ![capture](https://github.com/andesfreedesign/CosmeticThreads_FreeCAD/blob/main/capture.png)
 
-In principle it is based on @yorikvanhavre Texture Objects macro
+In principle it is based on @yorikvanhavre's Macro Texture Objects
 
 https://wiki.freecad.org/Macro_Texture_Objects
 
