@@ -1,0 +1,46 @@
+# -*- coding: utf-8 -*-
+# (c) MaxiV, 2023
+
+__Name__ = 'RefreshCosmeticThreads_FreeCAD'
+__Comment__ = 'A macro for FreeCAD software, which allows cosmetic threads to be applied to fasteners or threaded holes.'
+__Author__ = 'Maxi Vasquez'
+__Version__ = '0.1'
+__Date__ = '2023-08-28'
+__License__ = 'LGPL-2.0-or-later'
+
+
+import FreeCADGui
+import os
+from pivy import coin
+
+# Get the full path to the texture file
+texture_filename = os.path.join(os.path.dirname(__file__), "thread.jpg")
+
+# Select the group manually
+selected_objects = FreeCADGui.Selection.getSelection()
+
+if len(selected_objects) > 0:
+    # Check if the selected object is a group
+    selected_group = None
+    for obj in selected_objects:
+        if isinstance(obj, App.DocumentObjectGroup):
+            selected_group = obj
+            break
+
+    if selected_group:
+        # Iterate over the copies within the selected group
+        for obj in selected_group.Group:
+            if hasattr(obj, "ViewObject"):
+                # Create a texture node and set the file name
+                tex = coin.SoTexture2()
+                tex.filename = texture_filename
+
+                # Insert the new texture node into the object's scene
+                obj.ViewObject.RootNode.insertChild(tex, 1)
+
+        # Update the view
+        FreeCADGui.updateGui()
+    else:
+        print("The selected object is not a group.")
+else:
+    print("No object selected. Please select a group containing the copies before running the macro.")

@@ -1,0 +1,76 @@
+# -*- coding: utf-8 -*-
+# (c) MaxiV, 2023
+
+__Name__ = 'CosmeticThreads_FreeCAD'
+__Comment__ = 'A macro for FreeCAD software, which allows cosmetic threads to be applied to fasteners or threaded holes.'
+__Author__ = 'Maxi Vasquez'
+__Version__ = '0.1'
+__Date__ = '2023-08-28'
+__License__ = 'LGPL-2.0-or-later'
+
+import FreeCADGui
+from pivy import coin
+import Part
+import os
+
+# Get the filename of the "thread.jpg" image from the same directory as the macro
+macro_directory = os.path.dirname(__file__)
+jpgfilename = os.path.join(macro_directory, "thread.jpg")
+
+# Check if any faces are selected before proceeding
+selected_objects = FreeCADGui.Selection.getSelectionEx()
+if len(selected_objects) > 0:
+    # Create a group for the copies or use the existing "CosmeticThreads" group
+    cosmetics_group = FreeCAD.ActiveDocument.getObject("CosmeticThreads")
+    if cosmetics_group is None:
+        cosmetics_group = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroup", "CosmeticThreads")
+
+    for selected_obj in selected_objects:
+        selected_face = selected_obj.SubObjects[0]
+        if isinstance(selected_face, Part.Face):
+            # Extract information from the selected object
+            object_label = selected_obj.Object.Label
+
+            # Get the object
+            obj = FreeCAD.ActiveDocument.getObject(selected_obj.ObjectName)
+
+            # Get the color of the original object (in its graphical representation)
+            object_color = obj.ViewObject.DiffuseColor
+
+            # Find a suitable name for the copied object
+            copy_name = object_label + "_CosmeticThread"
+            counter = 1
+            while FreeCAD.ActiveDocument.getObject(copy_name):
+                copy_name = "{}_CosmeticThread{:03d}".format(object_label, counter)
+                counter += 1
+
+            # Create a copy of the selected face
+            copied_face = selected_face.copy()
+
+            # Create a Part object from the copied face
+            copied_part = Part.makeShell([copied_face])
+
+            # Assign the new Part object to a new FreeCAD object
+            copied_object = FreeCAD.ActiveDocument.addObject("Part::Feature", copy_name)
+            copied_object.Shape = copied_part
+
+            # Assign the same color from the original object to the copy
+            copied_object.ViewObject.DiffuseColor = object_color
+
+            # Change the DisplayMode to "Shaded"
+            copied_object.ViewObject.DisplayMode = u"Shaded"
+
+            # Create a texture node and set the filename
+            tex = coin.SoTexture2()
+            tex.filename = str(jpgfilename)
+
+            # Insert the texture node into the scene of the copied face object
+            copied_object.ViewObject.RootNode.insertChild(tex, 1)
+
+            # Add the copy to the "CosmeticThreads" group
+            cosmetics_group.addObject(copied_object)
+
+    # Update the view
+    FreeCADGui.updateGui()
+else:
+    print("No valid faces selected. Please select valid faces before running the macro.")
