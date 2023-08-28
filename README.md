@@ -12,5 +12,8 @@ https://wiki.freecad.org/Macro_Texture_Objects
 - Run the macro CosmeticThreads.FCMacro
 - A group called "CosmeticThreads" will be created, where all the applied textures are grouped.
 
-
 ![capture](https://github.com/andesfreedesign/CosmeticThreads_FreeCAD/blob/main/CosmeticThreads.gif)
+
+- Since the texture image is temporarily mapped, since when the document is closed and reopened it is not displayed, they can be displayed again by selecting the group and running the RefreshCosmeticThreads.FCMacro macro.
+
+![capture](https://github.com/andesfreedesign/CosmeticThreads_FreeCAD/blob/main/RefreshCosmeticThreads.gif)
